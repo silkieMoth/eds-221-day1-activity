@@ -1,0 +1,72 @@
+---
+title: "something something"
+author: "joshua paul cohen"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+stl_lead <- read_csv(here::here("data", "stl_blood_lead.csv"))
+```
+
+```{r}
+stl_lead <- stl_lead %>% clean_names()
+```
+
+```{r}
+names(stl_lead)
+dim(stl_lead)
+```
+
+```{r}
+ggplot(data = stl_lead, aes(x = poverty_tot, y = pct_elevated)) + geom_point()
+```
+
+```{r}
+stl_lead$white <- as.numeric(stl_lead$white)
+stl_lead$total_pop <- as.numeric(stl_lead$total_pop)
+```
+
+
+```{r}
+stl_lead_prop <- data.frame(stl_lead)
+```
+
+```{r}
+stl_lead_prop <- stl_lead_prop %>% select(everything()) %>% dplyr::mutate(prop_white = (white/total_pop) * 100)
+```
+
+```{r}
+stl_lead_plot <- ggplot(data = stl_lead_prop, aes(x = prop_white, y = pct_elevated)) + geom_point(size = 3, alpha = 0.7, aes(color = pct_elevated)) + scale_color_gradient(low = "green", high = "red")
+```
+
+```{r}
+stl_lead_plot
+```
+
+```{r}
+ggsave(here::here("figs", "stl_lead_plot.png"), width = 6, height = 5)
+```
+
+overall trend is poor and black people get exposed to more pollution
+
+```{r}
+pct_elevated_hist <- ggplot(data = stl_lead_prop, aes(x = pct_elevated)) + geom_histogram(show.legend = FALSE, fill = "black", aes(color = "red"))
+```
+
+```{r, fig.height=100, fig.width=1}
+pct_elevated_hist
+```
+
+
+```{r}
+ggsave(here::here("figs", "pct_elevated_hist.jpg"), width = 20, height = 1)
+```
+
+
